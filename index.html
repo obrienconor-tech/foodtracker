@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Food & Symptom Tracker</title>
+  <style>
+    :root {
+      color-scheme: light;
+      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #f6f7fb;
+      color: #1f2937;
+      line-height: 1.6;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .container {
+      width: min(1080px, 100%);
+      padding: 28px;
+      background: #ffffff;
+      border-radius: 24px;
+      box-shadow: 0 20px 60px rgba(15, 23, 42, 0.08);
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: clamp(1.8rem, 2.4vw, 2.6rem);
+    }
+
+    header p {
+      margin: 8px 0 0;
+      color: #4b5563;
+      max-width: 42rem;
+    }
+
+    .grid {
+      display: grid;
+      gap: 18px;
+    }
+
+    .cards {
+      display: grid;
+      gap: 18px;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .panel {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 18px;
+      padding: 20px;
+    }
+
+    .panel h2 {
+      margin-top: 0;
+      margin-bottom: 16px;
+      font-size: 1.15rem;
+    }
+
+    .panel small {
+      color: #6b7280;
+    }
+
+    label {
+      display: grid;
+      gap: 8px;
+      margin-bottom: 14px;
+      font-weight: 600;
+      color: #374151;
+    }
+
+    input[type="text"], input[type="date"], textarea, select {
+      width: 100%;
+      border-radius: 14px;
+      border: 1px solid #d1d5db;
+      padding: 12px 14px;
+      font-size: 0.98rem;
+      background: #ffffff;
+      color: #111827;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    input:focus, textarea:focus, select:focus {
+      outline: none;
+      border-color: #6366f1;
+      box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.12);
+    }
+
+    textarea {
+      min-height: 90px;
+      resize: vertical;
+    }
+
+    .checkbox-grid {
+      display: grid;
+      gap: 10px;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      margin-top: 4px;
+    }
+
+    .checkbox-option {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 14px;
+      background: #ffffff;
+      border: 1px solid #d1d5db;
+      font-weight: 500;
+      color: #111827;
+    }
+
+    .checkbox-option input {
+      width: 18px;
+      height: 18px;
+    }
+
+    .row {
+      display: grid;
+      gap: 16px;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .button-row {
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      cursor: pointer;
+      border: none;
+      border-radius: 14px;
+      padding: 12px 18px;
+      font-size: 1rem;
+      font-weight: 600;
+      transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+    }
+
+    button.primary {
+      background: #4338ca;
+      color: white;
+      box-shadow: 0 14px 30px rgba(67, 56, 202, 0.16);
+    }
+
+    button.secondary {
+      background: #e5e7eb;
+      color: #111827;
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+    }
+
+    .list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: grid;
+      gap: 12px;
+    }
+
+    .item {
+      border-radius: 16px;
+      background: white;
+      border: 1px solid #e5e7eb;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .item strong {
+      color: #111827;
+    }
+
+    .item small {
+      color: #6b7280;
+    }
+
+    .tag-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: #eef2ff;
+      color: #3730a3;
+      font-size: 0.88rem;
+    }
+
+    .analysis {
+      display: grid;
+      gap: 14px;
+      margin-top: 16px;
+    }
+
+    .analysis strong {
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    .analysis p {
+      margin: 0;
+      color: #4b5563;
+    }
+
+    .empty-state {
+      color: #6b7280;
+      padding: 16px;
+      background: #f8fafc;
+      border-radius: 16px;
+      border: 1px dashed #d1d5db;
+    }
+
+    @media (max-width: 850px) {
+      .cards, .row {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="container">
+    <header>
+      <div>
+        <h1>Food & Symptom Tracker</h1>
+        <p>Record what you eat and any gastrointestinal symptoms. The built-in analysis highlights repeat patterns so you can spot potential food triggers over time.</p>
+      </div>
+    </header>
+
+    <section class="grid">
+      <div class="cards">
+        <section class="panel">
+          <h2>Meal & Food Entry</h2>
+          <small>Log a meal with each food item separated by commas.</small>
+          <label>
+            Date
+            <input type="date" id="mealDate" />
+          </label>
+          <label>
+            Time (optional)
+            <input type="time" id="mealTime" />
+          </label>
+          <label>
+            Meal name
+            <input type="text" id="mealName" placeholder="Breakfast, Lunch, Dinner, Snack" />
+          </label>
+          <label>
+            Foods eaten
+            <textarea id="foodItems" placeholder="e.g. scrambled eggs, toast, avocado"></textarea>
+          </label>
+          <div class="button-row">
+            <button class="primary" id="saveMeal">Save Meal</button>
+            <button class="secondary" id="clearMeal">Clear</button>
+          </div>
+        </section>
+
+        <section class="panel">
+          <h2>Symptom Log</h2>
+          <small>Note any GI symptoms and how intense they feel.</small>
+          <label>
+            Date
+            <input type="date" id="symptomDate" />
+          </label>
+          <label>
+            Time (optional)
+            <input type="time" id="symptomTime" />
+          </label>
+          <fieldset id="symptomTypes" style="border:none; padding:0; margin:0;">
+            <legend style="font-weight:600; margin-bottom:8px; color:#374151;">Symptom types</legend>
+            <div class="checkbox-grid">
+              <label class="checkbox-option"><input type="checkbox" value="Abdominal pain" /> Abdominal pain</label>
+              <label class="checkbox-option"><input type="checkbox" value="Bloating" /> Bloating</label>
+              <label class="checkbox-option"><input type="checkbox" value="Gas" /> Gas</label>
+              <label class="checkbox-option"><input type="checkbox" value="Diarrhea" /> Diarrhea</label>
+              <label class="checkbox-option"><input type="checkbox" value="Constipation" /> Constipation</label>
+              <label class="checkbox-option"><input type="checkbox" value="Nausea" /> Nausea</label>
+            </div>
+          </fieldset>
+          <label>
+            Intensity (1-10)
+            <input type="text" id="symptomIntensity" placeholder="e.g. 4" />
+          </label>
+          <label>
+            Notes
+            <textarea id="symptomNotes" placeholder="Optional notes about timing or sensations"></textarea>
+          </label>
+          <div class="button-row">
+            <button class="primary" id="saveSymptom">Save Symptom</button>
+            <button class="secondary" id="clearSymptom">Clear</button>
+          </div>
+        </section>
+      </div>
+
+      <section class="panel">
+        <h2>Recent History</h2>
+        <div id="historyContainer" class="analysis"></div>
+      </section>
+
+      <section class="panel">
+        <h2>Potential Patterns</h2>
+        <div id="analysisContainer" class="analysis"></div>
+      </section>
+    </section>
+  </main>
+
+  <script>
+    const mealDate = document.getElementById('mealDate');
+    const mealTime = document.getElementById('mealTime');
+    const mealName = document.getElementById('mealName');
+    const foodItems = document.getElementById('foodItems');
+    const saveMeal = document.getElementById('saveMeal');
+    const clearMeal = document.getElementById('clearMeal');
+
+    const symptomDate = document.getElementById('symptomDate');
+    const symptomTime = document.getElementById('symptomTime');
+    const symptomIntensity = document.getElementById('symptomIntensity');
+    const symptomNotes = document.getElementById('symptomNotes');
+    const saveSymptom = document.getElementById('saveSymptom');
+    const clearSymptom = document.getElementById('clearSymptom');
+
+    const historyContainer = document.getElementById('historyContainer');
+    const analysisContainer = document.getElementById('analysisContainer');
+
+    const storageKeys = {
+      meals: 'foodTrackerMeals',
+      symptoms: 'foodTrackerSymptoms'
+    };
+
+    let meals = [];
+    let symptoms = [];
+
+    const today = new Date().toISOString().slice(0, 10);
+    mealDate.value = today;
+    symptomDate.value = today;
+
+    function loadData() {
+      try {
+        const storedMeals = localStorage.getItem(storageKeys.meals);
+        const storedSymptoms = localStorage.getItem(storageKeys.symptoms);
+        meals = storedMeals ? JSON.parse(storedMeals) : [];
+        symptoms = storedSymptoms ? JSON.parse(storedSymptoms) : [];
+      } catch (error) {
+        meals = [];
+        symptoms = [];
+      }
+    }
+
+    function saveData() {
+      localStorage.setItem(storageKeys.meals, JSON.stringify(meals));
+      localStorage.setItem(storageKeys.symptoms, JSON.stringify(symptoms));
+    }
+
+    function normalizeFoods(text) {
+      return text
+        .split(',')
+        .map(item => item.trim())
+        .filter(Boolean)
+        .map(item => item.toLowerCase());
+    }
+
+    function renderHistory() {
+      historyContainer.innerHTML = '';
+      if (!meals.length && !symptoms.length) {
+        historyContainer.innerHTML = '<div class="empty-state">No entries yet. Add meals and symptoms to start building your tracker.</div>';
+        return;
+      }
+
+      if (meals.length) {
+        const mealSection = document.createElement('div');
+        mealSection.innerHTML = '<strong>Meals logged</strong>';
+        const list = document.createElement('ul');
+        list.className = 'list';
+        meals.slice().reverse().forEach(entry => {
+          const item = document.createElement('li');
+          item.className = 'item';
+          const timestamp = entry.time ? `${entry.date} · ${entry.time}` : entry.date;
+          item.innerHTML = `
+            <div><strong>${entry.name || 'Meal'}</strong> <small>${timestamp}</small></div>
+            <div class="tag-row">${entry.foods.map(food => `<span class="tag">${food}</span>`).join('')}</div>
+          `;
+          list.appendChild(item);
+        });
+        mealSection.appendChild(list);
+        historyContainer.appendChild(mealSection);
+      }
+
+      if (symptoms.length) {
+        const symptomSection = document.createElement('div');
+        symptomSection.innerHTML = '<strong>Symptoms logged</strong>';
+        const list = document.createElement('ul');
+        list.className = 'list';
+        symptoms.slice().reverse().forEach(entry => {
+          const item = document.createElement('li');
+          item.className = 'item';
+          const timestamp = entry.time ? `${entry.date} · ${entry.time}` : entry.date;
+          const typeLabels = entry.types.map(type => `<span class="tag">${type}</span>`).join('');
+          item.innerHTML = `
+            <div><strong>Symptom entry</strong> <small>${timestamp} · intensity ${entry.intensity}</small></div>
+            <div class="tag-row">${typeLabels}</div>
+            <p>${entry.notes || 'No additional notes.'}</p>
+          `;
+          list.appendChild(item);
+        });
+        symptomSection.appendChild(list);
+        historyContainer.appendChild(symptomSection);
+      }
+    }
+
+    function analyzePatterns() {
+      analysisContainer.innerHTML = '';
+      if (!meals.length || !symptoms.length) {
+        analysisContainer.innerHTML = '<div class="empty-state">Add both meals and symptoms to see potential food-symptom connections here.</div>';
+        return;
+      }
+
+      const symptomByDate = symptoms.reduce((map, symptom) => {
+        const date = symptom.date;
+        if (!map[date]) map[date] = [];
+        map[date].push(symptom);
+        return map;
+      }, {});
+
+      const foodAssociations = {};
+      meals.forEach(meal => {
+        const symptomEntries = symptomByDate[meal.date] || [];
+        if (!symptomEntries.length) return;
+
+        meal.foods.forEach(food => {
+          if (!foodAssociations[food]) {
+            foodAssociations[food] = { hits: 0, meals: 0, symptoms: {} };
+          }
+
+          foodAssociations[food].meals += 1;
+          symptomEntries.forEach(symptom => {
+            symptom.types.forEach(type => {
+              foodAssociations[food].hits += 1;
+              if (!foodAssociations[food].symptoms[type]) {
+                foodAssociations[food].symptoms[type] = 0;
+              }
+              foodAssociations[food].symptoms[type] += 1;
+            });
+          });
+        });
+      });
+
+      const sortedFoods = Object.entries(foodAssociations)
+        .filter(([, value]) => value.hits > 0)
+        .sort((a, b) => b[1].hits - a[1].hits);
+
+      if (!sortedFoods.length) {
+        analysisContainer.innerHTML = '<div class="empty-state">No meal-symptom overlap found yet. Try logging symptoms on the same day as meals.</div>';
+        return;
+      }
+
+      sortedFoods.slice(0, 5).forEach(([food, data]) => {
+        const section = document.createElement('div');
+        section.className = 'item';
+        const symptomList = Object.entries(data.symptoms)
+          .sort((a, b) => b[1] - a[1])
+          .map(([type, count]) => `${type} (${count})`)
+          .join(', ');
+
+        section.innerHTML = `
+          <strong>${food}</strong>
+          <p>Logged with symptoms ${data.hits} time(s) across ${data.meals} meal(s).</p>
+          <p><strong>Top symptoms:</strong> ${symptomList}</p>
+        `;
+        analysisContainer.appendChild(section);
+      });
+
+      const totalSymptoms = symptoms.length;
+      const strongestMatch = sortedFoods[0];
+      if (strongestMatch) {
+        const [food, data] = strongestMatch;
+        const summary = document.createElement('div');
+        summary.className = 'item';
+        summary.innerHTML = `
+          <strong>Most frequent connection</strong>
+          <p>The food <span class="tag">${food}</span> appears most often on days when symptoms were logged.</p>
+          <p>Use this as a starting point to test by removing or substituting it for a few days.</p>
+        `;
+        analysisContainer.prepend(summary);
+      }
+    }
+
+    function clearMealForm() {
+      mealName.value = '';
+      foodItems.value = '';
+      mealDate.value = today;
+      mealTime.value = '';
+    }
+
+    function clearSymptomForm() {
+      document.querySelectorAll('#symptomTypes input[type="checkbox"]').forEach(input => {
+        input.checked = false;
+      });
+      symptomIntensity.value = '';
+      symptomNotes.value = '';
+      symptomDate.value = today;
+      symptomTime.value = '';
+    }
+
+    function saveMealEntry() {
+      const date = mealDate.value;
+      const time = mealTime.value;
+      const name = mealName.value.trim();
+      const foods = normalizeFoods(foodItems.value);
+
+      if (!date || !foods.length) {
+        alert('Please add a date and at least one food item.');
+        return;
+      }
+
+      meals.push({ date, time, name, foods });
+      saveMeal.textContent = 'Saved!';
+      setTimeout(() => (saveMeal.textContent = 'Save Meal'), 900);
+      clearMealForm();
+      saveData();
+      renderHistory();
+      analyzePatterns();
+    }
+
+    function saveSymptomEntry() {
+      const date = symptomDate.value;
+      const time = symptomTime.value;
+      const types = Array.from(document.querySelectorAll('#symptomTypes input[type="checkbox"]'))
+        .filter(input => input.checked)
+        .map(input => input.value);
+      const intensity = symptomIntensity.value.trim();
+      const notes = symptomNotes.value.trim();
+
+      if (!date || !types.length || !intensity || Number(intensity) < 1 || Number(intensity) > 10) {
+        alert('Please select one or more symptoms, choose a date, and add an intensity between 1 and 10.');
+        return;
+      }
+
+      symptoms.push({ date, time, types, intensity: Number(intensity), notes });
+      saveSymptom.textContent = 'Saved!';
+      setTimeout(() => (saveSymptom.textContent = 'Save Symptom'), 900);
+      clearSymptomForm();
+      saveData();
+      renderHistory();
+      analyzePatterns();
+    }
+
+    clearMeal.addEventListener('click', clearMealForm);
+    clearSymptom.addEventListener('click', clearSymptomForm);
+    saveMeal.addEventListener('click', saveMealEntry);
+    saveSymptom.addEventListener('click', saveSymptomEntry);
+
+    loadData();
+    renderHistory();
+    analyzePatterns();
+  </script>
+</body>
+</html>
